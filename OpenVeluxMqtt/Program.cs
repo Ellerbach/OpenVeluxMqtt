@@ -298,6 +298,7 @@ namespace OpenVeluxMqtt
                     LastAction[i] = true;
                 }
             }
+
             SelectWindows(number);
             _controller.Write(ButtonMiddleUp, PinValue.High);
             Thread.Sleep(ClickLength);
@@ -318,6 +319,7 @@ namespace OpenVeluxMqtt
                     LastAction[i] = false;
                 }
             }
+            
             SelectWindows(number);
             _controller.Write(ButtonMiddleDown, PinValue.High);
             Thread.Sleep(ClickLength);
