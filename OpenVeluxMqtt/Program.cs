@@ -93,7 +93,7 @@ namespace OpenVeluxMqtt
             // Connect to wifi
             if (!ConnectToWifi())
             {
-                Debug.WriteLine("Can't connect to wifi");
+                Console.WriteLine("Can't properly read the AM2320");
                 SetupDeepSleepAndRetry();
             }
 
@@ -128,7 +128,7 @@ namespace OpenVeluxMqtt
             int number = e.Topic[TopicSubscribe.Length] - '0';
             if ((number < 0) || (number > NumberOfWindows))
             {
-                Debug.WriteLine($"Windows number not correct: {number}");
+                Console.WriteLine($"Windows number not correct: {number}");
                 return;
             }
 
@@ -194,13 +194,13 @@ namespace OpenVeluxMqtt
             var temp = _am.Temperature;
             if (_am.IsLastReadSuccessful)
             {
-                Debug.WriteLine($"Temp: {temp.DegreesCelsius}, Hum: {hum.Percent}");
+                Console.WriteLine($"Temp: {temp.DegreesCelsius}, Hum: {hum.Percent}");
                 _mqtt.Publish(TopicHumidity, Encoding.UTF8.GetBytes($"{hum.Percent}"));
                 _mqtt.Publish(TopicTemperature, Encoding.UTF8.GetBytes($"{temp.DegreesCelsius}"));
             }
             else
             {
-                Debug.WriteLine("Can't properly read the DHT22");
+                Console.WriteLine("Can't properly read the AM2320");
             }
 
             for (int i = 0; i < NumberOfWindows; i++)
@@ -264,7 +264,7 @@ namespace OpenVeluxMqtt
 
         private static void SelectWindows(int number)
         {
-            Debug.WriteLine($"Current window is: {currentWindowsNumber}");
+            Console.WriteLine($"Current window is: {currentWindowsNumber}");
             int toMove = number - currentWindowsNumber;
             bool direction = false;
             Debug.WriteLine($"To move: {toMove}  and direction: {direction}");
@@ -289,7 +289,7 @@ namespace OpenVeluxMqtt
 
         private static void OpenWindow(int number)
         {
-            Debug.WriteLine($"Opening velux {number}");
+            Console.WriteLine($"Opening velux {number}");
             LastAction[number] = true;
             if (number == AllWindows)
             {
@@ -310,7 +310,7 @@ namespace OpenVeluxMqtt
 
         private static void CloseWindow(int number)
         {
-            Debug.WriteLine($"Closing velux {number}");
+            Console.WriteLine($"Closing velux {number}");
             LastAction[number] = false;
             if (number == AllWindows)
             {
@@ -351,20 +351,20 @@ namespace OpenVeluxMqtt
 
         private static bool ConnectToWifi()
         {
-            Debug.WriteLine("Program Started, connecting to WiFi.");
+            Console.WriteLine("Program Started, connecting to WiFi.");
 
             // As we are using TLS, we need a valid date & time
             // We will wait maximum 1 minute to get connected and have a valid date
-            var success = WiFiNetworkHelper.ConnectDhcp(Ssid, Password, requiresDateTime : true, token: new CancellationTokenSource(60000).Token);
+            var success = WifiNetworkHelper.ConnectDhcp(Ssid, Password, requiresDateTime : true, token: new CancellationTokenSource(60000).Token);
             if (!success)
             {
-                if (WiFiNetworkHelper.HelperException != null)
+                if (WifiNetworkHelper.HelperException != null)
                 {
-                    Debug.WriteLine($"{WiFiNetworkHelper.HelperException.Message}");
+                    Console.WriteLine($"{WifiNetworkHelper.HelperException.Message}");
                 }
             }
 
-            Debug.WriteLine($"Date and time is now {DateTime.UtcNow}");
+            Console.WriteLine($"Date and time is now {DateTime.UtcNow}");
             return success;
         }
     }
